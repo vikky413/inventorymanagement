@@ -1,10 +1,18 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema;
 const paymentSchema = new Schema({
-
+ 
     cname : {
         type:String,
         required:true,
+    },
+    user :{
+        type:String,
+        required:true
+    },
+    price : {
+        type:Number,
+        required:true
     },
     tid : {
         type : Number,
@@ -12,6 +20,10 @@ const paymentSchema = new Schema({
     }, 
     pid : {
         type:Number,
+        required:true
+    },
+    time : {
+        type:Date,
         required:true
     }
 });
