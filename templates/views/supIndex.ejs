@@ -81,12 +81,35 @@
             <div class="menu">
 
                 <ul class="menu-links">
+
                     <li class="nav-link">
-                        <a href="#Dashboard" onclick="dashboard()">
-                            <i class='bx bx-home-alt icon'></i>
-                            <span class="text nav-text">Dashboard</span>
+                        <a href="#addproduct" onclick="addproduct()">
+                            <i class='bx bx-pie-chart-alt icon'></i>
+                            <span class="text nav-text">Add product</span>
                         </a>
                     </li>
+
+                    <li class="nav-link">
+                        <a href="#userList" onclick="userList()">
+                            <i class='bx bx-bell icon'></i>
+                            <span class="text nav-text">Product Supply</span>
+                        </a>
+                    </li>
+           
+                    <li class="nav-link">
+                        <a href="#stock" onclick="stock()">
+                            <i class='bx bx-bell icon'></i>
+                            <span class="text nav-text">Stock Reminder</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-link">
+                        <a href="#reject" onclick="reject()">
+                            <i class='bx bx-bell icon'></i>
+                            <span class="text nav-text">Reject/Return</span>
+                        </a>
+                    </li>
+  
 
                     <li class="nav-link">
                         <a href="#payment" onclick="payment()">
@@ -96,49 +119,20 @@
                     </li>
 
 
-                    <li class="nav-link">
-                        <a href="#addproduct" onclick="addproduct()">
-                            <i class='bx bx-pie-chart-alt icon'></i>
-                            <span class="text nav-text">Add product</span>
-                        </a>
-                    </li>
-
+                   
 
 
                     <li class="nav-link">
                         <a href="#account" onclick="account()">
-                            <i class='bx bxs-user-circle icon'></i>
+                            <i class='bx bx-bell icon'></i>
                             <span class="text nav-text">Account</span>
                         </a>
                     </li>
-                    <li class="nav-link">
-                        <a href="#userList" onclick="userList()">
-                            <i class='bx bx-send icon'></i>
-                            <span class="text nav-text">Product Supply</span>
-                        </a>
-                    </li>
 
-                    <li class="nav-link">
-                        <a href="#category" onclick="category()">
-                            <i class='bx bxs-add-to-queue icon'></i>
-                            <span class="text nav-text">Add category</span>
-                        </a>
-                    </li>
+                   
 
-                    <li class="nav-link">
-                        <a href="#stock" onclick="stock()">
-                            <i class='bx bx-bell icon'></i>
-                            <span class="text nav-text">Stock Reminder</span>
-                        </a>
-                    </li>
-
-                    <li class="nav-link">
-                      <a href="#reject" onclick="reject()">
-                          <i class='bx bx-refresh icon'></i>
-                          <span class="text nav-text">Reject/Return</span>
-                      </a>
-                  </li>
-
+                   
+                   
 
                 </ul>
             </div>
@@ -183,8 +177,7 @@
         
         <div class="column">
             <div class="card" style="background: rgb(14, 119, 52);">
-                <!-- <i class="fa fa-dollar iconStyle" ></i> -->
-                <i class='bx bx-rupee iconStyle'></i>
+                <i class="fa fa-dollar iconStyle" ></i>
                <div>
                    <p>Total Store Value</p>
                    <% var x = 0 %>
@@ -299,7 +292,7 @@
                                       <div class="form-group">
                                         <label for="username" class="col-md-3 control-label">Product Name</label>
                                         <div class="col-md-9">
-                                            <input type="text" class="form-control" name="pname" placeholder="Enter YourPassword Category Name">
+                                            <input type="text" class="form-control" name="pname" placeholder="Enter Product Name">
                                         </div>
                                     </div>
                                     
@@ -307,12 +300,8 @@
                                         <label for="username" class="col-md-3 control-label">Product Category</label>
                                         <div class="col-md-9">
                                            <select class="form-control" name="cat">
-                                               <option value="">Choose Category</option>
-                                               <% if(cdata.length > 0){
-                                                cdata.forEach(function(row){
-                                                %>
-                                               <option value="<%= row.cate %>"><%= row.cate%></option>
-                                               <%  }) } %>
+                                               <option value="<%= sups.cat %>"><%= sups.cat %></option>
+                                               
                                               </select>
                                               </select>
                                         </div>
@@ -343,7 +332,7 @@
                                     <div class="form-group">
                                         <label for="username" class="col-md-3 control-label">Product Description</label>
                                         <div class="col-md-9">
-                                            <textarea type="text" class="form-control" name="descr" placeholder="Enter YourPassword Category Name"></textarea>
+                                            <textarea type="text" class="form-control" name="descr" placeholder="Enter Product Description"></textarea>
                                         </div>
                                     </div>
 
@@ -364,14 +353,15 @@
               </div>
         </div>
         <div id="account" class="collpase">
-            <div class="profileCon">
+            <div class="profileCon" style="margin: 86px; width: max-content;background-color: gainsboro;">
                 <div class="profileCard">
-                  <br />
-                  <% if(sups){ %> 
+                  <br>
+                  <% if(sups) { %>
                   <div><p><span style="font-size: 20px;"><b>Name : <%= sups.name %></b></span></p></div>
                   <div>
                     <p><span style="font-size: 20px;"><b>Email : <%= sups.email %></b></span></p>
                   </div>
+                  <button><a href="/logout" style="color: white;">SignOut</a></button>
                   <% } %>
                 </div>
              </div>
@@ -388,6 +378,7 @@
                     <th>Name</th>
                     <th>Price</th>
                     <th>Image</th>
+                    <th>Description</th>
                     <th>Action</th>
                 </tr>
               </thead>
@@ -405,6 +396,7 @@
                           <img src="./upload/<%= row.file %>" alt="image" style="width: 40px; margin: 5px auto;">
                       </div>
                     </td>
+                    <td><%= row.descr %></td>
                     <td>
                       <% if(row.pid == 100){ %>
                       <a class="btn btn-primary " href="/sell/edit/<%= row._id %>">supply</a>
@@ -423,42 +415,7 @@
 
         </div>
         <div id="category" class="collpase">
-            <div class="container">
-                <div class="row">
-
-                    <div id="signupbox" style="margin-top:50px" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
-                        <div class="panel panel-info">
-                            <div class="panel-heading">
-                                <div class="panel-title"> Add New Category</div>
-                                 </div>  
-                            <div class="panel-body" >
-                                <form action="/add-new-category" id="EmployeeForm" class="form-horizontal" method="post"  role="form">
-
-
-                                      <div class="form-group">
-                                        <label for="category" class="col-md-12 ">Category Name</label>
-                                        <div class="col-md-12">
-                                            <input type="text" class="form-control" name="cate" placeholder="Enter Category Name">
-                                        </div>
-                                    </div>
-                                    
-                                  
-
-                                    <div class="form-group">
-                                        <!-- Button -->                                        
-                                        <div class="col-md-offset-3 col-md-9">
-                                        <input type="submit" name="submit" value="Add Category" class="btn btn-primary">   
-                                        </div>
-                                    </div>
-                                    
-                                    <p><a href="#">View All Lists</a></p>
-   
-                                </form>
-                             </div>
-                        </div>             
-             </div> 
-                </div>
-              </div>
+            
         </div>
         <div id="stock" class="collpase">
           <div class="container">
