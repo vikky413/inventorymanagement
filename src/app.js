@@ -14,8 +14,9 @@ const otpModel = require("./models/otp")
 var jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer')
 const multer = require("multer");
+const { threadId } = require("worker_threads");
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 5000;
 
 const static_path = path.join(__dirname, "../public");
 const temp_path = path.join(__dirname, "../templates/views");
@@ -318,8 +319,18 @@ app.get("/supplier", async (req, res) => {
   }
  
 });
-app.get('/payments', (req,res)=> {
-  res.render("payments", { title: 'Inventory Management System'})
+
+app.get('/payments', async (req,res)=> {
+  var loginUser=localStorage.getItem('loginUser');
+  const record = Product.find({});
+  try {
+    let records = await record.exec();
+    res.render("payments", { title: 'Inventory Management System',loginUser:loginUser,records:records})
+  }
+  catch(err){
+    throw Error
+  }
+ 
 })
 
 app.get("/supIndex",async (req, res) => {
@@ -336,7 +347,7 @@ app.get("/supIndex",async (req, res) => {
       let sixdata = await smodel.exec()
       let paid = await paymodel.exec()
       let ssdata = await checkUser.exec()
-      res.render('supIndex', { title: 'Inventory Management System', loginUser: loginUser, supl: twodata, pdata: fourdata, cdata: sixdata,pydata:paid,sups:ssdata, msg:"", succ:"" });
+      res.render('supIndex', { title: 'Inventory Management System', loginUser: loginUser, supl: twodata, pdata: fourdata, cdata: sixdata,pydata:paid,sups:ssdata });
     }
     catch (err) {
       throw Error();
@@ -388,11 +399,7 @@ app.post("/ssignup",checkEmail ,function (req, res, next) {
   var cat = req.body.cat;
   var sid = 1;
   if (password != confpassword) {
-    res.render("supplier", {
-      title: "Inventory Management System",
-      msg: "Password Not Matched",
-      succ:""
-    });
+    res.redirect("/fail")
   } else {
     var userDetails = new Supplier({
       name: name,
@@ -504,29 +511,73 @@ app.post("/add-new-category", function (req, res, next) {
 // })
 
 
-app.post("/paymentss", function (req, res, next) {
+app.post("/paymentss", async function (req, res, next) {
   var loginUser = localStorage.getItem('loginUser');
   const cname = req.body.cname;
+  const price = req.body.price;
   const tid = Math.floor(Math.random() * 10000000);
   const pid = 1;
+  const user = loginUser;
+  var id = req.body.rowid;
+  var productid=1111;
+  var date = new Date();
   var passcatDetails = new Payment ({
     cname:cname,
     tid:tid,
-    pid:pid
+    pid:pid,
+    price:price,
+    user:user,
+    time:date
   });
 
-  const getPassCat = Category.find({})
-  const getdata = Product.find({})
+  var passdelete = Product.findByIdAndUpdate(id, { pid: productid });
 
-   let categ = getPassCat.exec();
-   let prod = getdata.exec();
-
-  passcatDetails.save(function (err, doc) {
+ await passcatDetails.save(function (err, doc) {
     if (err) throw err;
-    res.redirect('/adIndex')
+    passdelete.exec()
+    res.redirect('/receipt')
   })
 })
 
+app.get('/invoice', async (req,res)=>{
+  var loginUser = localStorage.getItem('loginUser');
+  const pdata = Payment.find()
+  try {
+    let records = await pdata.exec()
+    res.render('invoice',{loginUser:loginUser,records:records})
+  }
+  catch(err){
+    throw Error
+  }
+  
+})
+
+
+app.get('/receipt', async (req,res)=>{
+  var loginUser = localStorage.getItem('loginUser');
+  const pdata = Payment.find()
+  try {
+    let records = await pdata.exec()
+    res.render('receipt',{loginUser:loginUser,records:records})
+  }
+  catch(err){
+    throw Error
+  }
+  
+})
+
+
+app.get('/buy/edit/:id', checkLoginUser,function(req, res, next) {
+  var loginUser=localStorage.getItem('loginUser');
+  var id = req.params.id;
+  var productid=111;
+  var passdelete = Product.findByIdAndUpdate(id, { pid: productid });
+  // var passdelete= Product.findByIdAndDelete(passcat_id);
+  passdelete.exec(function(err){
+    if(err) throw err;
+     res.redirect('/payments')
+  });
+});
 
 
 app.get('/buy/delete/:id', checkLoginUser,function(req, res, next) {
